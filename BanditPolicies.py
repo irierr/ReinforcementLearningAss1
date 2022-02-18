@@ -14,17 +14,31 @@ class EgreedyPolicy:
 
     def __init__(self, n_actions=10):
         self.n_actions = n_actions
+        self.Q = np.zeros(n_actions)
+        self.n = np.zeros(n_actions)
         # TO DO: Add own code
         pass
         
     def select_action(self, epsilon):
         # TO DO: Add own code
-        a = np.random.randint(0,self.n_actions) # Replace this with correct action selection
+        p = np.random.uniform() 
+        if p <= 1 - epsilon: # with 1-ε we choose one of the action that maximizes Q(a)
+            choices = np.argwhere(self.Q==np.max(self.Q)).flatten()
+            a = np.random.choice(choices) 
+        else: # otherwise we choose another action 
+            choices = np.argwhere(self.Q!=np.max(self.Q)).flatten()
+            if choices.size>0:
+                a = np.random.choice(choices) 
+            else: # if this has no cases it means every action had the same Q value
+                a = np.random.randint(self.n_actions)         
         return a
         
     def update(self,a,r):
         # TO DO: Add own code
-        pass
+        # update rule for n(a) and Q(a)
+        self.n[a] += 1
+        self.Q[a] = self.Q[a] + (r-self.Q[a])/self.n[a]
+        return self
 
 class OIPolicy:
 
@@ -47,16 +61,25 @@ class UCBPolicy:
     def __init__(self, n_actions=10):
         self.n_actions = n_actions
         # TO DO: Add own code
+        self.Q = np.zeros(n_actions)
+        self.n = np.zeros(n_actions)
         pass
-    
+ 
     def select_action(self, c, t):
         # TO DO: Add own code
-        a = np.random.randint(0,self.n_actions) # Replace this with correct action selection
+        
+        with np.errstate(divide='ignore'):
+            # set the function to optimize action, **important** keep eye on division by 0
+            f = self.Q + c*np.sqrt(np.log(t+2)/self.n)
+            choices = np.argwhere(f==np.max(f)).flatten()
+        a = np.random.choice(choices)
         return a
         
     def update(self,a,r):
         # TO DO: Add own code
-        pass
+        # update rule
+        self.n[a] += 1
+        self.Q[a] += (r-self.Q[a])/self.n[a]
     
 def test():
     n_actions = 10
