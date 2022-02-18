@@ -10,98 +10,97 @@ By Thomas Moerland
 import numpy as np
 from BanditEnvironment import BanditEnvironment
 
+
 class EgreedyPolicy:
 
     def __init__(self, n_actions=10):
         self.n_actions = n_actions
         self.Q = np.zeros(n_actions)
         self.n = np.zeros(n_actions)
-        # TO DO: Add own code
         pass
-        
+
     def select_action(self, epsilon):
-        # TO DO: Add own code
-        p = np.random.uniform() 
-        if p <= 1 - epsilon: # with 1-ε we choose one of the action that maximizes Q(a)
-            choices = np.argwhere(self.Q==np.max(self.Q)).flatten()
-            a = np.random.choice(choices) 
-        else: # otherwise we choose another action 
-            choices = np.argwhere(self.Q!=np.max(self.Q)).flatten()
-            if choices.size>0:
-                a = np.random.choice(choices) 
-            else: # if this has no cases it means every action had the same Q value
-                a = np.random.randint(self.n_actions)         
+        p = np.random.uniform()
+        if p <= 1 - epsilon:  # with 1-ε we choose one of the action that maximizes Q(a)
+            choices = np.argwhere(self.Q == np.max(self.Q)).flatten()
+            a = np.random.choice(choices)
+        else:  # otherwise we choose another action
+            choices = np.argwhere(self.Q != np.max(self.Q)).flatten()
+            if choices.size > 0:
+                a = np.random.choice(choices)
+            else:  # if this has no cases it means every action had the same Q value
+                a = np.random.randint(self.n_actions)
         return a
-        
-    def update(self,a,r):
-        # TO DO: Add own code
+
+    def update(self, a, r):
         # update rule for n(a) and Q(a)
         self.n[a] += 1
-        self.Q[a] = self.Q[a] + (r-self.Q[a])/self.n[a]
+        self.Q[a] = self.Q[a] + (r - self.Q[a]) / self.n[a]
         return self
+
 
 class OIPolicy:
 
     def __init__(self, n_actions=10, initial_value=0.0, learning_rate=0.1):
         self.n_actions = n_actions
-        # TO DO: Add own code
+        self.learning_rate = learning_rate
+        self.mean_estimates = np.full(n_actions, initial_value)  # set all mean estimates to initial value
         pass
-        
+
     def select_action(self):
-        # TO DO: Add own code
-        a = np.random.randint(0,self.n_actions) # Replace this with correct action selection
+        a = self.mean_estimates.argmax()  # select highest mean estimate
         return a
-        
-    def update(self,a,r):
-        # TO DO: Add own code
+
+    def update(self, a, r):
+        # update mean estimate with learning based update mean.
+        self.mean_estimates[a] += self.learning_rate * (r - self.mean_estimates[a])
         pass
+
 
 class UCBPolicy:
 
     def __init__(self, n_actions=10):
         self.n_actions = n_actions
-        # TO DO: Add own code
         self.Q = np.zeros(n_actions)
         self.n = np.zeros(n_actions)
         pass
- 
+
     def select_action(self, c, t):
-        # TO DO: Add own code
-        
         with np.errstate(divide='ignore'):
             # set the function to optimize action, **important** keep eye on division by 0
-            f = self.Q + c*np.sqrt(np.log(t+2)/self.n)
-            choices = np.argwhere(f==np.max(f)).flatten()
+            f = self.Q + c * np.sqrt(np.log(t + 2) / self.n)
+            choices = np.argwhere(f == np.max(f)).flatten()
         a = np.random.choice(choices)
         return a
-        
-    def update(self,a,r):
-        # TO DO: Add own code
+
+    def update(self, a, r):
         # update rule
         self.n[a] += 1
-        self.Q[a] += (r-self.Q[a])/self.n[a]
-    
+        self.Q[a] += (r - self.Q[a]) / self.n[a]
+
+
 def test():
     n_actions = 10
-    env = BanditEnvironment(n_actions=n_actions) # Initialize environment    
-    
-    pi = EgreedyPolicy(n_actions=n_actions) # Initialize policy
-    a = pi.select_action(epsilon=0.5) # select action
-    r = env.act(a) # sample reward
-    pi.update(a,r) # update policy
-    print("Test e-greedy policy with action {}, received reward {}".format(a,r))
-    
-    pi = OIPolicy(n_actions=n_actions,initial_value=1.0) # Initialize policy
-    a = pi.select_action() # select action
-    r = env.act(a) # sample reward
-    pi.update(a,r) # update policy
-    print("Test greedy optimistic initialization policy with action {}, received reward {}".format(a,r))
-    
-    pi = UCBPolicy(n_actions=n_actions) # Initialize policy
-    a = pi.select_action(c=1.0,t=1) # select action
-    r = env.act(a) # sample reward
-    pi.update(a,r) # update policy
-    print("Test UCB policy with action {}, received reward {}".format(a,r))
-    
+    env = BanditEnvironment(n_actions=n_actions)  # Initialize environment
+
+    pi = EgreedyPolicy(n_actions=n_actions)  # Initialize policy
+    a = pi.select_action(epsilon=0.5)  # select action
+    r = env.act(a)  # sample reward
+    pi.update(a, r)  # update policy
+    print("Test e-greedy policy with action {}, received reward {}".format(a, r))
+
+    pi = OIPolicy(n_actions=n_actions, initial_value=1.0)  # Initialize policy
+    a = pi.select_action()  # select action
+    r = env.act(a)  # sample reward
+    pi.update(a, r)  # update policy
+    print("Test greedy optimistic initialization policy with action {}, received reward {}".format(a, r))
+
+    pi = UCBPolicy(n_actions=n_actions)  # Initialize policy
+    a = pi.select_action(c=1.0, t=1)  # select action
+    r = env.act(a)  # sample reward
+    pi.update(a, r)  # update policy
+    print("Test UCB policy with action {}, received reward {}".format(a, r))
+
+
 if __name__ == '__main__':
     test()
