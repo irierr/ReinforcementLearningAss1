@@ -15,17 +15,17 @@ class EgreedyPolicy:
 
     def __init__(self, n_actions=10):
         self.n_actions = n_actions
-        self.Q = np.zeros(n_actions)
+        self.mean_estimates = np.zeros(n_actions)
         self.n = np.zeros(n_actions)
         pass
 
     def select_action(self, epsilon):
         p = np.random.uniform()
-        if p <= 1 - epsilon:  # with 1-ε we choose one of the action that maximizes Q(a)
-            choices = np.argwhere(self.Q == np.max(self.Q)).flatten()
+        if p <= 1 - epsilon:  # with 1-ε we choose one of the action that maximizes mean_estimates(a)
+            choices = np.argwhere(self.mean_estimates == np.max(self.mean_estimates)).flatten()
             a = np.random.choice(choices)
         else:  # otherwise we choose another action
-            choices = np.argwhere(self.Q != np.max(self.Q)).flatten()
+            choices = np.argwhere(self.mean_estimates != np.max(self.mean_estimates)).flatten()
             if choices.size > 0:
                 a = np.random.choice(choices)
             else:  # if this has no cases it means every action had the same Q value
@@ -33,9 +33,9 @@ class EgreedyPolicy:
         return a
 
     def update(self, a, r):
-        # update rule for n(a) and Q(a)
+        # update rule for n(a) and mean_estimates(a)
         self.n[a] += 1
-        self.Q[a] = self.Q[a] + (r - self.Q[a]) / self.n[a]
+        self.mean_estimates[a] += (r - self.mean_estimates[a]) / self.n[a]
         return self
 
 
@@ -48,7 +48,8 @@ class OIPolicy:
         pass
 
     def select_action(self):
-        a = self.mean_estimates.argmax()  # select highest mean estimate
+        choices = np.argwhere(self.mean_estimates == np.max(self.mean_estimates)).flatten()
+        a = np.random.choice(choices)
         return a
 
     def update(self, a, r):
@@ -61,14 +62,17 @@ class UCBPolicy:
 
     def __init__(self, n_actions=10):
         self.n_actions = n_actions
-        self.Q = np.zeros(n_actions)
+        self.mean_estimates = np.zeros(n_actions)
         self.n = np.zeros(n_actions)
         pass
 
     def select_action(self, c, t):
-        with np.errstate(divide='ignore'):
-            # set the function to optimize action, **important** keep eye on division by 0
-            f = self.Q + c * np.sqrt(np.log(t + 2) / self.n)
+        # set the function to optimize action, **important** keep eye on division by 0
+        choices_0 = np.argwhere(self.n==0).flatten()
+        if choices_0.size > 0:
+            choices = choices_0
+        else:
+            f = self.mean_estimates + c * np.sqrt(np.log(t+1) / self.n)
             choices = np.argwhere(f == np.max(f)).flatten()
         a = np.random.choice(choices)
         return a
@@ -76,7 +80,7 @@ class UCBPolicy:
     def update(self, a, r):
         # update rule
         self.n[a] += 1
-        self.Q[a] += (r - self.Q[a]) / self.n[a]
+        self.mean_estimates[a] += (r - self.mean_estimates[a]) / self.n[a]
 
 
 def test():

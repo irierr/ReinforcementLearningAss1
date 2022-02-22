@@ -52,42 +52,73 @@ def run_repetitions(method='egreedy', n_timesteps=1000, n_actions=10, policy_par
 
     return np.array(rewards)
 
+
 def experiment(n_actions, n_timesteps, n_repetitions, smoothing_window):
-    # TODO: Only has 1 experiment per method yet,
-    #       maybe we should code it more elegant to have every experiment inside a loop
-
     # Assignment 1: e-greedy
-    r_means = np.zeros(n_timesteps)
-    for i in range(n_repetitions):
-        # print(run_repetitions())
-        r_means += run_repetitions('egreedy', n_timesteps, n_actions, 0.1)
-    r_means /= n_repetitions
-    r_means = smooth(r_means, smoothing_window)
-    plot = LearningCurvePlot(title="Egreedy")
-    plot.add_curve(r_means)
-
-    # Assignment 2: Optimistic init
-    r_means = np.zeros(n_timesteps)
-    for i in range(n_repetitions):
-        # print(run_repetitions())
-        r_means += run_repetitions('oi', n_timesteps, n_actions, 0.1)
+    # TODO: Give proper title
+    epsilon_values = [0.01, 0.05, 0.1, 0.25]
+    e_greedy_plot = LearningCurvePlot(title="comparison of ε values in ε-greedy")
+    e_greedy_rewards = np.zeros(shape=(len(epsilon_values), n_timesteps))
+    for e_index, e in enumerate(epsilon_values):
+        r_means = np.zeros(n_timesteps)
+        for i in range(n_repetitions):
+            r_means += run_repetitions('egreedy', n_timesteps, n_actions, e)
         r_means /= n_repetitions
         r_means = smooth(r_means, smoothing_window)
-        plot = LearningCurvePlot(title="OI")
-        plot.add_curve(r_means)
+        e_greedy_plot.add_curve(r_means, str(e))
+        e_greedy_rewards[e_index] = r_means
+    e_greedy_plot.save("e_greedy_plot.png", legend_title="ε Value")
+
+    # Assignment 2: Optimistic init
+    # TODO: Give proper title
+    initial_values = [0.1, 0.5, 1.0, 2.0]
+    oi_plot = LearningCurvePlot(title="OI")
+    oi_rewards = np.zeros(shape=(len(initial_values), n_timesteps))
+    for val_index, val in enumerate(initial_values):
+        r_means = np.zeros(n_timesteps)
+        for i in range(n_repetitions):
+            r_means += run_repetitions('oi', n_timesteps, n_actions, val)
+        r_means /= n_repetitions
+        r_means = smooth(r_means, smoothing_window)
+        oi_rewards[val_index] = r_means
+        oi_plot.add_curve(r_means, str(val))
+    oi_plot.save("oi_plot.png", legend_title="Initial Mean Estimate")
 
     # Assignment 3: UCB
-    r_means = np.zeros(n_timesteps)
-    for i in range(n_repetitions):
-        # print(run_repetitions())
-        r_means += run_repetitions('ucb', n_timesteps, n_actions, 0.1)
-    r_means /= n_repetitions
-    r_means = smooth(r_means, smoothing_window)
-    plot = LearningCurvePlot(title="UCB")
-    plot.add_curve(r_means)
+    # TODO: Give proper title
+    c_values = [.01, .05, .1, .25, .5, 1]
+    ucb_plot = LearningCurvePlot(title="UCB")
+    ucb_rewards = np.zeros(shape=(len(c_values), n_timesteps))
+    for index_c, c in enumerate(c_values):
+        r_means = np.zeros(n_timesteps)
+        for i in range(n_repetitions):
+            r_means += run_repetitions('ucb', n_timesteps, n_actions, c)
+        r_means /= n_repetitions
+        r_means = smooth(r_means, smoothing_window)
+        ucb_rewards[index_c] = r_means
+        ucb_plot.add_curve(r_means, str(c))
+    ucb_plot.save('ucb_plot.png', legend_title="Exploration Constant")
 
     # Assignment 4: Comparison
+    # TODO: Give proper title
+    comparison_plot = ComparisonPlot(title="Comparison", timesteps=n_timesteps)
+    e_greedy_mean_rewards = np.mean(e_greedy_rewards, axis=1)
+    oi_mean_rewards = np.mean(oi_rewards, axis=1)
+    ucb_mean_rewards = np.mean(ucb_rewards, axis=1)
+    comparison_plot.add_curve(x=epsilon_values, y=e_greedy_mean_rewards, label="ε-Greedy")
+    comparison_plot.add_curve(x=initial_values, y=oi_mean_rewards, label="Optimistic Initialization")
+    comparison_plot.add_curve(x=c_values, y=ucb_mean_rewards, label='UCB')
+    comparison_plot.save(name="Comparison", legend_title="Policies")
 
+    # TODO: Give proper title
+    optimal_plot = LearningCurvePlot()
+    opt_epsilon_index = np.argmax(e_greedy_mean_rewards)
+    opt_initial_val_index = np.argmax(oi_mean_rewards)
+    opt_c_index = np.argmax(ucb_mean_rewards)
+    optimal_plot.add_curve(e_greedy_rewards[opt_epsilon_index], label='ε-Greedy')
+    optimal_plot.add_curve(oi_rewards[opt_initial_val_index], label='Optimistic Initialization')
+    optimal_plot.add_curve(ucb_rewards[opt_c_index], label='UCB')
+    optimal_plot.save("optimal_plots.png", legend_title="Policies")
     # pass
 
 
@@ -95,7 +126,7 @@ if __name__ == '__main__':
     # experiment settings
     n_actions = 10
     n_repetitions = 500
-    n_timesteps = 1000
+    n_timesteps = 50
     smoothing_window = 31
 
     experiment(n_actions=n_actions, n_timesteps=n_timesteps,

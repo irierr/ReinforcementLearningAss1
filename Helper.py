@@ -31,18 +31,18 @@ class LearningCurvePlot:
         else:
             self.ax.plot(y)
 
-    def save(self, name='test.png'):
+    def save(self, name='test.png', legend_title=None):
         ''' name: string for filename of saved figure '''
-        self.ax.legend()
+        self.ax.legend(title=legend_title)
         self.fig.savefig(name, dpi=300)
 
 
 class ComparisonPlot:
 
-    def __init__(self, title=None):
+    def __init__(self, title=None, timesteps=0):
         self.fig, self.ax = plt.subplots()
         self.ax.set_xlabel('Parameter (exploration)')
-        self.ax.set_ylabel('Average reward')
+        self.ax.set_ylabel(f'Average reward over first {timesteps} timesteps')
         self.ax.set_xscale('log')
         if title is not None:
             self.ax.set_title(title)
@@ -56,9 +56,9 @@ class ComparisonPlot:
         else:
             self.ax.plot(x, y)
 
-    def save(self, name='test.png'):
+    def save(self, name='test.png', legend_title=None):
         ''' name: string for filename of saved figure '''
-        self.ax.legend()
+        self.ax.legend(title=legend_title)
         self.fig.savefig(name, dpi=300)
 
 
