@@ -113,48 +113,6 @@ def experiment(n_actions, n_timesteps, n_repetitions, smoothing_window):
     optimal_plot.add_curve(ucb_rewards[opt_c_index], label='UCB')
     optimal_plot.save("optimal_plots.png", legend_title="Policies")
 
-    # # Assignment 1: e-greedy
-    # epsilon_values = [0.01, 0.05, 0.1, 0.25]
-    # e_greedy_plot = LearningCurvePlot(title="comparison of ε values in ε-greedy")
-    # e_greedy_rewards = np.zeros(shape=(len(epsilon_values), n_timesteps))
-    # for e_index, e in enumerate(epsilon_values):
-    #     r_means = np.zeros(n_timesteps)
-    #     for i in range(n_repetitions):
-    #         r_means += run_repetitions('egreedy', n_timesteps, n_actions, e)
-    #     r_means /= n_repetitions
-    #     r_means = smooth(r_means, smoothing_window)
-    #     e_greedy_plot.add_curve(r_means, str(e))
-    #     e_greedy_rewards[e_index] = r_means
-    # e_greedy_plot.save("e_greedy_plot.png", legend_title="ε Value")
-    #
-    # # Assignment 2: Optimistic init
-    # initial_values = [0.1, 0.5, 1.0, 2.0]
-    # oi_plot = LearningCurvePlot(title="OI")
-    # oi_rewards = np.zeros(shape=(len(initial_values), n_timesteps))
-    # for val_index, val in enumerate(initial_values):
-    #     r_means = np.zeros(n_timesteps)
-    #     for i in range(n_repetitions):
-    #         r_means += run_repetitions('oi', n_timesteps, n_actions, val)
-    #     r_means /= n_repetitions
-    #     r_means = smooth(r_means, smoothing_window)
-    #     oi_rewards[val_index] = r_means
-    #     oi_plot.add_curve(r_means, str(val))
-    # oi_plot.save("oi_plot.png", legend_title="Initial Mean Estimate")
-    #
-    # # Assignment 3: UCB
-    # c_values = [.01, .05, .1, .25, .5, 1]
-    # ucb_plot = LearningCurvePlot(title="UCB")
-    # ucb_rewards = np.zeros(shape=(len(c_values), n_timesteps))
-    # for index_c, c in enumerate(c_values):
-    #     r_means = np.zeros(n_timesteps)
-    #     for i in range(n_repetitions):
-    #         r_means += run_repetitions('ucb', n_timesteps, n_actions, c)
-    #     r_means /= n_repetitions
-    #     r_means = smooth(r_means, smoothing_window)
-    #     ucb_rewards[index_c] = r_means
-    #     ucb_plot.add_curve(r_means, str(c))
-    # ucb_plot.save('ucb_plot.png', legend_title="Exploration Constant")
-
 
 if __name__ == '__main__':
     # experiment settings
