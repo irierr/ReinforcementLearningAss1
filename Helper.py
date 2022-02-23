@@ -34,7 +34,7 @@ class LearningCurvePlot:
     def save(self, name='test.png', legend_title=None):
         ''' name: string for filename of saved figure '''
         self.ax.legend(title=legend_title)
-        self.fig.savefig(name, dpi=300)
+        self.fig.savefig(f"Plots/{name}", dpi=300)
 
 
 class ComparisonPlot:
@@ -59,7 +59,7 @@ class ComparisonPlot:
     def save(self, name='test.png', legend_title=None):
         ''' name: string for filename of saved figure '''
         self.ax.legend(title=legend_title)
-        self.fig.savefig(name, dpi=300)
+        self.fig.savefig(f"Plots/{name}", dpi=300)
 
 
 def smooth(y, window, poly=1):
