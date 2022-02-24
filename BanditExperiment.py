@@ -65,9 +65,9 @@ def run_each_parameter(method, parameter_values, n_actions, n_timesteps, n_repet
     return rewards
 
 
-def plot_exp(title: str, legend_title: str, rewards, parameter_values):
-    plot = LearningCurvePlot(title)
-    for i, value in enumerate(parameter_values):
+def plot_exp(title: str, legend_title: str, rewards, legend_values):
+    plot = LearningCurvePlot("")
+    for i, value in enumerate(legend_values):
         plot.add_curve(rewards[i], str(value))
     plot.save(title.replace(" ", "_"), legend_title)
 
@@ -78,24 +78,20 @@ def experiment(n_actions, n_timesteps, n_repetitions, smoothing_window):
     epsilon_values = [0.01, 0.05, 0.1, 0.25]
     e_greedy_rewards = run_each_parameter("egreedy", epsilon_values, n_actions,
                                           n_timesteps, n_repetitions, smoothing_window)
-    plot_exp(title="comparison of ε values in ε-greedy", legend_title="ε Value",
-             rewards=e_greedy_rewards, parameter_values=epsilon_values)
+    plot_exp(title="egreedy", legend_title="ε Value", rewards=e_greedy_rewards, legend_values=epsilon_values)
 
     # Assignment 2: Optimistic init
     initial_values = [0.1, 0.5, 1.0, 2.0]
     oi_rewards = run_each_parameter("oi", initial_values, n_actions, n_timesteps, n_repetitions, smoothing_window)
-    plot_exp(title="OI", legend_title="Initial Mean Estimate",
-             rewards=oi_rewards, parameter_values=initial_values)
+    plot_exp(title="oi", legend_title="Initial Mean Estimate", rewards=oi_rewards, legend_values=initial_values)
 
     # Assignment 3: UCB
     c_values = [.01, .05, .1, .25, .5, 1]
     ucb_rewards = run_each_parameter("ucb", c_values, n_actions, n_timesteps, n_repetitions, smoothing_window)
-    plot_exp(title="UCB", legend_title="Exploration Constant",
-             rewards=ucb_rewards, parameter_values=c_values)
+    plot_exp(title="ucb", legend_title="Exploration Constant", rewards=ucb_rewards, legend_values=c_values)
 
     # Assignment 4: Comparison
-    comparison_plot = ComparisonPlot(title="Comparison of different parameter values for 3 policies",
-                                     timesteps=n_timesteps)
+    comparison_plot = ComparisonPlot(title="comparison")
     e_greedy_mean_rewards = np.mean(e_greedy_rewards, axis=1)
     oi_mean_rewards = np.mean(oi_rewards, axis=1)
     ucb_mean_rewards = np.mean(ucb_rewards, axis=1)
@@ -104,7 +100,7 @@ def experiment(n_actions, n_timesteps, n_repetitions, smoothing_window):
     comparison_plot.add_curve(x=c_values, y=ucb_mean_rewards, label='UCB')
     comparison_plot.save(name="Comparison", legend_title="Policies")
 
-    optimal_plot = LearningCurvePlot(title="Optimal parameter values for 3 policies compared")
+    optimal_plot = LearningCurvePlot(title="Average reward compared for 3 bandit policies with optimized parameters")
     opt_epsilon_index = np.argmax(e_greedy_mean_rewards)
     opt_initial_val_index = np.argmax(oi_mean_rewards)
     opt_c_index = np.argmax(ucb_mean_rewards)

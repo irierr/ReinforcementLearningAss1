@@ -68,11 +68,11 @@ class UCBPolicy:
 
     def select_action(self, c, t):
         # set the function to optimize action, **important** keep eye on division by 0
-        choices_0 = np.argwhere(self.n==0).flatten()
+        choices_0 = np.argwhere(self.n == 0).flatten()
         if choices_0.size > 0:
             choices = choices_0
         else:
-            f = self.mean_estimates + c * np.sqrt(np.log(t+1) / self.n)
+            f = self.mean_estimates + c * np.sqrt(np.log(t + 1) / self.n)
             choices = np.argwhere(f == np.max(f)).flatten()
         a = np.random.choice(choices)
         return a

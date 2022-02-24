@@ -2,3 +2,4 @@
 /.pytest_cache
 /OldPlots
 *.png
+/__pycache__

@@ -17,8 +17,8 @@ class LearningCurvePlot:
 
     def __init__(self, title=None):
         self.fig, self.ax = plt.subplots()
-        self.ax.set_xlabel('Time')
-        self.ax.set_ylabel('Reward')
+        self.ax.set_xlabel('Timestep')
+        self.ax.set_ylabel(f'Average Reward')
         self.ax.set_ylim([0, 1.0])
         if title is not None:
             self.ax.set_title(title)
@@ -39,10 +39,10 @@ class LearningCurvePlot:
 
 class ComparisonPlot:
 
-    def __init__(self, title=None, timesteps=0):
+    def __init__(self, title=None):
         self.fig, self.ax = plt.subplots()
         self.ax.set_xlabel('Parameter (exploration)')
-        self.ax.set_ylabel(f'Average reward over first {timesteps} timesteps')
+        self.ax.set_ylabel(f'Average reward')
         self.ax.set_xscale('log')
         if title is not None:
             self.ax.set_title(title)
