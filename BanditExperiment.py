@@ -91,14 +91,14 @@ def experiment(n_actions, n_timesteps, n_repetitions, smoothing_window):
     plot_exp(title="ucb", legend_title="Exploration Constant", rewards=ucb_rewards, legend_values=c_values)
 
     # Assignment 4: Comparison
-    comparison_plot = ComparisonPlot(title="comparison")
+    comparison_plot = ComparisonPlot(title="")
     e_greedy_mean_rewards = np.mean(e_greedy_rewards, axis=1)
     oi_mean_rewards = np.mean(oi_rewards, axis=1)
     ucb_mean_rewards = np.mean(ucb_rewards, axis=1)
     comparison_plot.add_curve(x=epsilon_values, y=e_greedy_mean_rewards, label="ε-Greedy")
     comparison_plot.add_curve(x=initial_values, y=oi_mean_rewards, label="Optimistic Initialization")
     comparison_plot.add_curve(x=c_values, y=ucb_mean_rewards, label='UCB')
-    comparison_plot.save(name="Comparison", legend_title="Policies")
+    comparison_plot.save(name="comparison", legend_title="Policies")
 
     optimal_plot = LearningCurvePlot(title="Average reward compared for 3 bandit policies with optimized parameters")
     opt_epsilon_index = np.argmax(e_greedy_mean_rewards)
@@ -107,7 +107,7 @@ def experiment(n_actions, n_timesteps, n_repetitions, smoothing_window):
     optimal_plot.add_curve(e_greedy_rewards[opt_epsilon_index], label='ε-Greedy')
     optimal_plot.add_curve(oi_rewards[opt_initial_val_index], label='Optimistic Initialization')
     optimal_plot.add_curve(ucb_rewards[opt_c_index], label='UCB')
-    optimal_plot.save("optimal_plots.png", legend_title="Policies")
+    optimal_plot.save("optimal_plots", legend_title="Policies")
 
 
 if __name__ == '__main__':
