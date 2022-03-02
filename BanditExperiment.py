@@ -100,7 +100,7 @@ def experiment(n_actions, n_timesteps, n_repetitions, smoothing_window):
     comparison_plot.add_curve(x=c_values, y=ucb_mean_rewards, label='UCB')
     comparison_plot.save(name="comparison", legend_title="Policies")
 
-    optimal_plot = LearningCurvePlot(title="Average reward compared for 3 bandit policies with optimized parameters")
+    optimal_plot = LearningCurvePlot(title="")
     opt_epsilon_index = np.argmax(e_greedy_mean_rewards)
     opt_initial_val_index = np.argmax(oi_mean_rewards)
     opt_c_index = np.argmax(ucb_mean_rewards)
