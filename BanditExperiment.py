@@ -69,7 +69,7 @@ def plot_exp(title: str, legend_title: str, rewards, legend_values):
     plot = LearningCurvePlot("")
     for i, value in enumerate(legend_values):
         plot.add_curve(rewards[i], str(value))
-    plot.save(title.replace(" ", "_"), legend_title)
+    plot.save(name=title.replace(" ", "_"), legend_title=legend_title)
 
 
 def experiment(n_actions, n_timesteps, n_repetitions, smoothing_window):
